@@ -1,0 +1,9 @@
+{
+  "enchantment.whipsandgiggles.grappling": "Grappling",
+  "enchantment.whipsandgiggles.grappling.desc": "Fully charge right-click to reel a struck entity or grapple a block. Sneak to detach. Incompatible with Piercing.",
+  "enchantment.whipsandgiggles.piercing": "Piercing",
+  "enchantment.whipsandgiggles.piercing.desc": "Strikes one additional entity per level along the lash. Incompatible with Grappling.",
+  "enchantment.whipsandgiggles.reach": "Reach",
+  "enchantment.whipsandgiggles.reach.desc": "Adds 3 blocks of lash and grappling reach per level. Compatible with Grappling and Piercing.",
+  "item.whipsandgiggles.whip": "Whip"
+}

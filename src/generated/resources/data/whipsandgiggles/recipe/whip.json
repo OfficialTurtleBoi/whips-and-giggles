@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "T": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    " TT",
+    "S T",
+    " T "
+  ],
+  "result": {
+    "count": 1,
+    "id": "whipsandgiggles:whip"
+  }
+}

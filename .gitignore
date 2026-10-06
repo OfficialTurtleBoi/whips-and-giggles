@@ -1,0 +1,7 @@
+.gradle/
+build/
+run/
+repo/
+.idea/
+*.iml
+src/generated/resources/.cache/

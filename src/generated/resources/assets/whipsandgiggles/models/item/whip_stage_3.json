@@ -1,0 +1,229 @@
+{
+  "base": {
+    "parent": "minecraft:item/handheld",
+    "display": {
+      "firstperson_lefthand": {
+        "rotation": [
+          0,
+          -90,
+          -45
+        ],
+        "scale": [
+          1.8360001,
+          1.8360001,
+          0.68
+        ],
+        "translation": [
+          1.26,
+          11.875578,
+          0.79341686
+        ]
+      },
+      "firstperson_righthand": {
+        "rotation": [
+          0,
+          -90,
+          45
+        ],
+        "scale": [
+          1.8360001,
+          1.8360001,
+          0.68
+        ],
+        "translation": [
+          1.2599998,
+          12.232498,
+          -0.68969595
+        ]
+      },
+      "fixed": {
+        "scale": [
+          2,
+          2,
+          1
+        ],
+        "translation": [
+          8,
+          9.5,
+          0
+        ]
+      },
+      "ground": {
+        "scale": [
+          1,
+          1,
+          0.5
+        ],
+        "translation": [
+          4,
+          6.75,
+          0
+        ]
+      },
+      "gui": {
+        "scale": [
+          2,
+          2,
+          1
+        ],
+        "translation": [
+          8,
+          9.5,
+          0
+        ]
+      },
+      "thirdperson_lefthand": {
+        "rotation": [
+          -90,
+          -90,
+          -45
+        ],
+        "scale": [
+          1.8700001,
+          1.8700001,
+          0.85
+        ],
+        "translation": [
+          0,
+          -5.9493504,
+          -14.487685
+        ]
+      },
+      "thirdperson_righthand": {
+        "rotation": [
+          -90,
+          -90,
+          45
+        ],
+        "scale": [
+          1.8700001,
+          1.8700001,
+          0.85
+        ],
+        "translation": [
+          -1.9505624e-07,
+          -3.3047733,
+          -16.891846
+        ]
+      }
+    },
+    "textures": {
+      "layer0": "whipsandgiggles:item/whip3"
+    }
+  },
+  "loader": "neoforge:separate_transforms",
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/handheld",
+      "display": {
+        "firstperson_lefthand": {
+          "rotation": [
+            0,
+            -90,
+            -45
+          ],
+          "scale": [
+            1.8360001,
+            1.8360001,
+            0.68
+          ],
+          "translation": [
+            1.26,
+            11.875578,
+            0.79341686
+          ]
+        },
+        "firstperson_righthand": {
+          "rotation": [
+            0,
+            -90,
+            35
+          ],
+          "scale": [
+            1.8360001,
+            1.8360001,
+            0.68
+          ],
+          "translation": [
+            1.2600001,
+            11.750654,
+            2.221281
+          ]
+        },
+        "fixed": {
+          "scale": [
+            2,
+            2,
+            1
+          ],
+          "translation": [
+            8,
+            9.5,
+            0
+          ]
+        },
+        "ground": {
+          "scale": [
+            1,
+            1,
+            0.5
+          ],
+          "translation": [
+            4,
+            6.75,
+            0
+          ]
+        },
+        "gui": {
+          "scale": [
+            2,
+            2,
+            1
+          ],
+          "translation": [
+            8,
+            9.5,
+            0
+          ]
+        },
+        "thirdperson_lefthand": {
+          "rotation": [
+            0,
+            -90,
+            -45
+          ],
+          "scale": [
+            1.8700001,
+            1.8700001,
+            0.85
+          ],
+          "translation": [
+            0,
+            12.562706,
+            1.3797922
+          ]
+        },
+        "thirdperson_righthand": {
+          "rotation": [
+            0,
+            -90,
+            45
+          ],
+          "scale": [
+            1.8700001,
+            1.8700001,
+            0.85
+          ],
+          "translation": [
+            0,
+            12.562706,
+            1.6202078
+          ]
+        }
+      },
+      "textures": {
+        "layer0": "whipsandgiggles:item/whip1"
+      }
+    }
+  }
+}
