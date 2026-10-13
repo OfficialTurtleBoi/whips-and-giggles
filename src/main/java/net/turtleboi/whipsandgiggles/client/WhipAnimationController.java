@@ -8,7 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.turtleboi.whipsandgiggles.component.ModDataComponents;
 import net.turtleboi.whipsandgiggles.item.custom.WhipItem;
 import net.turtleboi.whipsandgiggles.network.WhipAttackPayload;
@@ -39,7 +39,7 @@ public final class WhipAnimationController {
     }
 
     public static float getRenderPartialTick(LivingEntity entity) {
-        return Minecraft.getInstance().getTimer()
+        return Minecraft.getInstance().getDeltaTracker()
                 .getGameTimeDeltaPartialTick(!entity.level().tickRateManager().isEntityFrozen(entity));
     }
 
@@ -73,7 +73,7 @@ public final class WhipAnimationController {
         event.setSwingHand(false);
         if (whipItem.tryNormalAttack(player, hand)) {
             beginPredictedLash(player, hand);
-            PacketDistributor.sendToServer(new WhipAttackPayload(hand == InteractionHand.OFF_HAND));
+            ClientPacketDistributor.sendToServer(new WhipAttackPayload(hand == InteractionHand.OFF_HAND));
         }
     }
 

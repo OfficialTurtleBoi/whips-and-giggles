@@ -19,7 +19,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -31,7 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
@@ -63,23 +63,23 @@ public class WhipItem extends Item {
     private static final Map<UUID, ActiveGrapple> ACTIVE_GRAPPLES_BY_PLAYER = new HashMap<>();
 
     public WhipItem(Properties properties) {
-        super(properties);
+        super(properties.enchantable(15).repairable(Items.STRING));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (stack.has(ModDataComponents.GRAPPLE_ANCHOR_POSITION)) {
             detachGrapple(player);
-            return InteractionResultHolder.consume(stack);
+            return InteractionResult.CONSUME;
         }
-        if (player.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(stack);
+        if (player.getCooldowns().isOnCooldown(stack)) return InteractionResult.FAIL;
         if (player.isShiftKeyDown()) detachGrapple(player);
         stack.remove(ModDataComponents.LASH_START_GAME_TICK);
         stack.remove(ModDataComponents.LASH_ATTACK_POWER);
         stack.remove(ModDataComponents.LASH_CONTACT_DISTANCE_BLOCKS);
         player.startUsingItem(hand);
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
     @Override
@@ -88,23 +88,24 @@ public class WhipItem extends Item {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.NONE;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.NONE;
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity itemUser, int timeLeft) {
+    public boolean releaseUsing(ItemStack stack, Level level, LivingEntity itemUser, int timeLeft) {
         if (!(itemUser instanceof Player player) || player.isSpectator() || !player.isAlive()
-                || player.getCooldowns().isOnCooldown(this)) return;
+                || player.getCooldowns().isOnCooldown(stack)) return false;
         int chargeDurationTicks = getUseDuration(stack, itemUser) - timeLeft;
-        if (chargeDurationTicks < 2) return;
+        if (chargeDurationTicks < 2) return false;
         beginLash(player, stack, player.getUsedItemHand(), calculateChargePower(chargeDurationTicks),
                 chargeDurationTicks >= FULL_CHARGE_DURATION_TICKS);
+        return true;
     }
 
     public boolean tryNormalAttack(Player player, InteractionHand hand) {
         if (player.isSpectator() || !player.isAlive() || player.isUsingItem()
-                || player.getCooldowns().isOnCooldown(this) || player.getItemInHand(hand).getItem() != this) return false;
+                || player.getCooldowns().isOnCooldown(player.getItemInHand(hand)) || player.getItemInHand(hand).getItem() != this) return false;
         beginLash(player, player.getItemInHand(hand), hand, NORMAL_ATTACK_POWER_FRACTION, false);
         return true;
     }
@@ -115,7 +116,7 @@ public class WhipItem extends Item {
         stack.set(ModDataComponents.LASH_ATTACK_POWER, attackPower);
         stack.set(ModDataComponents.LASH_CONTACT_DISTANCE_BLOCKS,
                 findContactDistance(player, stack, player.getEyePosition(), player.getLookAngle()));
-        player.getCooldowns().addCooldown(this, LASH_DURATION_TICKS);
+        player.getCooldowns().addCooldown(stack, LASH_DURATION_TICKS);
         if (player instanceof ServerPlayer serverPlayer) {
             scheduleStrike(serverPlayer, stack, hand, attackPower, allowGrappling);
             player.awardStat(Stats.ITEM_USED.get(this));
@@ -123,9 +124,9 @@ public class WhipItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity itemHolder, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity itemHolder, EquipmentSlot slot) {
         Long lashStartGameTick = stack.get(ModDataComponents.LASH_START_GAME_TICK);
-        if (!level.isClientSide && !stack.has(ModDataComponents.GRAPPLE_ANCHOR_POSITION)
+        if (!stack.has(ModDataComponents.GRAPPLE_ANCHOR_POSITION)
                 && lashStartGameTick != null && level.getGameTime() - lashStartGameTick >= LASH_DURATION_TICKS) {
             stack.remove(ModDataComponents.LASH_START_GAME_TICK);
             stack.remove(ModDataComponents.LASH_ATTACK_POWER);
@@ -136,16 +137,6 @@ public class WhipItem extends Item {
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged || oldStack.getItem() != newStack.getItem();
-    }
-
-    @Override
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairIngredient) {
-        return repairIngredient.is(Items.STRING);
-    }
-
-    @Override
-    public int getEnchantmentValue() {
-        return 15;
     }
 
     public static float calculateChargePower(int chargeTicks) {
@@ -173,8 +164,7 @@ public class WhipItem extends Item {
         return 0.35F + 0.65F * Math.clamp(contactDistanceBlocks / attackReachBlocks, 0, 1);
     }
 
-    @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+    public static ItemAttributeModifiers calculateAttributeModifiers(ItemStack stack) {
         return ItemAttributeModifiers.builder()
                 .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
                         calculateAttackDamage(NORMAL_ATTACK_POWER_FRACTION) - 1, AttributeModifier.Operation.ADD_VALUE),
@@ -191,14 +181,14 @@ public class WhipItem extends Item {
         detachGrapple(player);
         PENDING_STRIKES_BY_PLAYER.put(player.getUUID(), new ScheduledStrike(stack, hand, attackPower,
                 player.level().getGameTime() + STRIKE_IMPACT_DELAY_TICKS,
-                player.serverLevel(), allowGrappling));
+                player.level(), allowGrappling));
     }
 
     public static void tickPlayerWhipActions(ServerPlayer player) {
         ScheduledStrike scheduledStrike = PENDING_STRIKES_BY_PLAYER.get(player.getUUID());
         if (scheduledStrike != null && player.level().getGameTime() >= scheduledStrike.impactGameTick()) {
             PENDING_STRIKES_BY_PLAYER.remove(player.getUUID());
-            if (isStillHoldingWhip(player, scheduledStrike.stack(), scheduledStrike.hand()) && player.serverLevel() == scheduledStrike.level()) {
+            if (isStillHoldingWhip(player, scheduledStrike.stack(), scheduledStrike.hand()) && player.level() == scheduledStrike.level()) {
                 applyStrike(player, scheduledStrike.stack(), scheduledStrike.hand(), scheduledStrike.attackPower(),
                         player.getEyePosition(), player.getLookAngle(), scheduledStrike.allowGrappling());
             }
@@ -206,9 +196,9 @@ public class WhipItem extends Item {
         ActiveGrapple activeGrapple = ACTIVE_GRAPPLES_BY_PLAYER.get(player.getUUID());
         if (activeGrapple == null) return;
         Vec3 anchorOffset = activeGrapple.anchorPosition().subtract(player.getEyePosition());
-        BlockHitResult obstructionHit = clipStrikeAgainstBlocks(player.serverLevel(), player, player.getEyePosition(), activeGrapple.anchorPosition());
+        BlockHitResult obstructionHit = clipStrikeAgainstBlocks(player.level(), player, player.getEyePosition(), activeGrapple.anchorPosition());
         if (!isStillHoldingWhip(player, activeGrapple.stack(), activeGrapple.hand()) || player.isShiftKeyDown()
-                || player.serverLevel() != activeGrapple.level()
+                || player.level() != activeGrapple.level()
                 || anchorOffset.length() < 0.6 || anchorOffset.length() > WhipConfig.getAttackReach(activeGrapple.stack(), player.level()) + 1
                 || player.level().getBlockState(activeGrapple.anchorBlockPos()).isAir()
                 || (obstructionHit.getType() == HitResult.Type.BLOCK && !obstructionHit.getBlockPos().equals(activeGrapple.anchorBlockPos()))) {
@@ -228,7 +218,7 @@ public class WhipItem extends Item {
 
     private static void applyStrike(ServerPlayer player, ItemStack stack, InteractionHand hand,
                               float attackPower, Vec3 origin, Vec3 direction, boolean allowGrappling) {
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = player.level();
         int grapplingEnchantmentLevel = ModEnchantments.getEnchantmentLevel(stack, level, ModEnchantments.GRAPPLING);
         int effectiveGrapplingLevel = allowGrappling ? grapplingEnchantmentLevel : 0;
         int piercingEnchantmentLevel = grapplingEnchantmentLevel > 0 ? 0 : ModEnchantments.getEnchantmentLevel(stack, level, ModEnchantments.PIERCING);
@@ -244,12 +234,12 @@ public class WhipItem extends Item {
         for (int i = 0; i < targetCount; i++) {
             StrikeTarget strikeTarget = strikeTargets.get(i);
             LivingEntity hitEntity = strikeTarget.hitEntity();
-            if (hitEntity instanceof Player victim && (!level.getServer().isPvpAllowed() || !player.canHarmPlayer(victim))) continue;
+            if (hitEntity instanceof Player victim && !player.canHarmPlayer(victim)) continue;
             if (!CommonHooks.onPlayerAttackTarget(player, hitEntity)) continue;
             DamageSource damageSource = player.damageSources().playerAttack(player);
             float attackDamage = EnchantmentHelper.modifyDamage(level, stack, hitEntity, damageSource,
                     (float) calculateAttackDamage(attackPower));
-            if (hitEntity.hurt(damageSource, attackDamage)) {
+            if (hitEntity.hurtServer(level, damageSource, attackDamage)) {
                 Vec3 hitPosition = strikeTarget.hitPosition();
                 level.sendParticles(ParticleTypes.CRIT, hitPosition.x, hitPosition.y, hitPosition.z, 6, 0.12, 0.12, 0.12, 0.08);
                 EnchantmentHelper.doPostAttackEffectsWithItemSource(level, hitEntity, damageSource, stack);
@@ -264,7 +254,7 @@ public class WhipItem extends Item {
             }
         }
         if (effectiveGrapplingLevel > 0 && strikeTargets.isEmpty() && blockHit.getType() == HitResult.Type.BLOCK) {
-            Vec3 anchorPosition = blockHit.getLocation().add(Vec3.atLowerCornerOf(blockHit.getDirection().getNormal()).scale(0.05));
+            Vec3 anchorPosition = blockHit.getLocation().add(blockHit.getDirection().getUnitVec3().scale(0.05));
             ACTIVE_GRAPPLES_BY_PLAYER.put(player.getUUID(), new ActiveGrapple(stack, hand, anchorPosition, blockHit.getBlockPos(), level));
             stack.set(ModDataComponents.GRAPPLE_ANCHOR_POSITION, anchorPosition);
         }
@@ -321,7 +311,7 @@ public class WhipItem extends Item {
     }
 
     public static void detachGrapple(Player player) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             ActiveGrapple activeGrapple = ACTIVE_GRAPPLES_BY_PLAYER.remove(player.getUUID());
             if (activeGrapple != null) beginGrappleRetraction(player, activeGrapple.stack());
         } else {
@@ -335,7 +325,7 @@ public class WhipItem extends Item {
     private static void beginGrappleRetraction(Player player, ItemStack stack) {
         stack.remove(ModDataComponents.GRAPPLE_ANCHOR_POSITION);
         stack.set(ModDataComponents.LASH_START_GAME_TICK, player.level().getGameTime() - RETRACTION_START_TICK);
-        player.getCooldowns().addCooldown(stack.getItem(), LASH_DURATION_TICKS - RETRACTION_START_TICK);
+        player.getCooldowns().addCooldown(stack, LASH_DURATION_TICKS - RETRACTION_START_TICK);
     }
 
     public static void clearPlayerWhipActions(Player player) {

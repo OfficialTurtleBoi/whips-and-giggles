@@ -3,7 +3,7 @@
     {
       "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
       "name": "WHIPSANDGIGGLES_LASH",
-      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "constructor": "(ZZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
       "parameters": {
         "class": "net/turtleboi/whipsandgiggles/client/WhipClientExtensions",
         "field": "WHIP_LASH_ARM_POSE"

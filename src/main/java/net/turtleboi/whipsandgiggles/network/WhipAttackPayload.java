@@ -12,7 +12,7 @@ import net.turtleboi.whipsandgiggles.WhipsAndGiggles;
 import net.turtleboi.whipsandgiggles.item.custom.WhipItem;
 
 public record WhipAttackPayload(boolean useOffHand) implements CustomPacketPayload {
-    public static final Type<WhipAttackPayload> TYPE = new Type<>(WhipsAndGiggles.resourceLocation("attack_whip"));
+    public static final Type<WhipAttackPayload> TYPE = new Type<>(WhipsAndGiggles.identifier("attack_whip"));
     public static final StreamCodec<RegistryFriendlyByteBuf, WhipAttackPayload> STREAM_CODEC =
             StreamCodec.composite(ByteBufCodecs.BOOL, WhipAttackPayload::useOffHand, WhipAttackPayload::new);
 

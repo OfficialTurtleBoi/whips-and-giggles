@@ -25,14 +25,14 @@ public class ModEnchantmentProvider extends DatapackBuiltinEntriesProvider {
         bootstrapContext.register(ModEnchantments.GRAPPLING, Enchantment.enchantment(Enchantment.definition(
                         enchantableWhipItems, enchantableWhipItems, 2, 1,
                         Enchantment.constantCost(20), Enchantment.constantCost(50), 4, EquipmentSlotGroup.HAND))
-                .exclusiveWith(exclusiveWhipEnchantments).build(ModEnchantments.GRAPPLING.location()));
+                .exclusiveWith(exclusiveWhipEnchantments).build(ModEnchantments.GRAPPLING.identifier()));
         bootstrapContext.register(ModEnchantments.PIERCING, Enchantment.enchantment(Enchantment.definition(
                         enchantableWhipItems, enchantableWhipItems, 5, 3,
                         Enchantment.dynamicCost(10, 10), Enchantment.dynamicCost(40, 10), 2, EquipmentSlotGroup.HAND))
-                .exclusiveWith(exclusiveWhipEnchantments).build(ModEnchantments.PIERCING.location()));
+                .exclusiveWith(exclusiveWhipEnchantments).build(ModEnchantments.PIERCING.identifier()));
         bootstrapContext.register(ModEnchantments.REACH, Enchantment.enchantment(Enchantment.definition(
                         enchantableWhipItems, enchantableWhipItems, 5, 3,
                         Enchantment.dynamicCost(10, 10), Enchantment.dynamicCost(40, 10), 2, EquipmentSlotGroup.HAND))
-                .build(ModEnchantments.REACH.location()));
+                .build(ModEnchantments.REACH.identifier()));
     }
 }

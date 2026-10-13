@@ -3,6 +3,7 @@ package net.turtleboi.whipsandgiggles.events;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
@@ -32,6 +33,15 @@ public final class ModEvents {
     @SubscribeEvent
     public static void onServerStopped(ServerStoppedEvent event) {
         WhipItem.clearAllWhipActions();
+    }
+
+    @SubscribeEvent
+    public static void onItemAttributes(ItemAttributeModifierEvent event) {
+        if (event.getItemStack().getItem() instanceof WhipItem) {
+            for (var entry : WhipItem.calculateAttributeModifiers(event.getItemStack()).modifiers()) {
+                event.replaceModifier(entry.attribute(), entry.modifier(), entry.slot());
+            }
+        }
     }
 
     @SubscribeEvent

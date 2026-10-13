@@ -8,22 +8,22 @@ plugins {
 version = mod_version
 group = mod_group_id
 base {
-    archivesName = 'whips-and-giggles'
+    archivesName = "whips-and-giggles-${minecraft_version}"
 }
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 repositories {
     mavenCentral()
 }
 
-sourceSets.main.resources.srcDir 'src/generated/resources'
+sourceSets.main.resources {
+    srcDir 'src/generated/client'
+    srcDir 'src/generated/server'
+    exclude '**/.cache/**'
+}
 
 neoForge {
     version = project.neo_version
-    parchment {
-        minecraftVersion = project.minecraft_version
-        mappingsVersion = '2024.11.17'
-    }
     runs {
         client {
             client()
@@ -32,13 +32,24 @@ neoForge {
             server()
             programArgument '--nogui'
         }
-        data {
-            gameDirectory = file('run/data')
-            data()
+        serverData {
+            gameDirectory = file('run/server-data')
+            serverData()
             programArguments.addAll(
                     '--mod', project.mod_id,
                     '--all',
-                    '--output', file('src/generated/resources').absolutePath,
+                    '--output', file('src/generated/server').absolutePath,
+                    '--existing', file('src/main/resources').absolutePath
+            )
+        }
+        data {
+            gameDirectory = file('run/client-data')
+            clientData()
+            taskBefore tasks.named('runServerData')
+            programArguments.addAll(
+                    '--mod', project.mod_id,
+                    '--all',
+                    '--output', file('src/generated/client').absolutePath,
                     '--existing', file('src/main/resources').absolutePath
             )
         }
@@ -59,7 +70,8 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
             mod_id: mod_id,
             mod_name: mod_name,
             mod_version: mod_version,
-            neo_version: neo_version
+            neo_version: neo_version,
+            minecraft_version: minecraft_version
     ]
     inputs.properties properties
     expand properties

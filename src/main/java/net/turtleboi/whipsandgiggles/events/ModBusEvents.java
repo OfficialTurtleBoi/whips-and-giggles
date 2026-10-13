@@ -11,7 +11,7 @@ import net.turtleboi.whipsandgiggles.datagen.ModDatagen;
 import net.turtleboi.whipsandgiggles.item.ModItems;
 import net.turtleboi.whipsandgiggles.network.WhipAttackPayload;
 
-@EventBusSubscriber(modid = WhipsAndGiggles.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = WhipsAndGiggles.MOD_ID)
 public final class ModBusEvents {
     @SubscribeEvent
     public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
@@ -26,7 +26,7 @@ public final class ModBusEvents {
     }
 
     @SubscribeEvent
-    public static void gatherServerData(GatherDataEvent event) {
+    public static void gatherServerData(GatherDataEvent.Server event) {
         ModDatagen.gatherServerData(event);
     }
 }

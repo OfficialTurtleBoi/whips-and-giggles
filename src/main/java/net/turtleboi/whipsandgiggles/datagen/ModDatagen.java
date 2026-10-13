@@ -11,21 +11,21 @@ import net.turtleboi.whipsandgiggles.datagen.providers.ModLanguageProvider;
 import net.turtleboi.whipsandgiggles.datagen.providers.ModRecipeProvider;
 
 public final class ModDatagen {
-    public static void gatherClientData(GatherDataEvent event) {
+    public static void gatherClientData(GatherDataEvent.Client event) {
         DataGenerator dataGenerator = event.getGenerator();
         PackOutput packOutput = dataGenerator.getPackOutput();
-        dataGenerator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, event.getExistingFileHelper()));
-        dataGenerator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput));
+        dataGenerator.addProvider(true, new ModItemModelProvider(packOutput));
+        dataGenerator.addProvider(true, new ModLanguageProvider(packOutput));
     }
 
-    public static void gatherServerData(GatherDataEvent event) {
+    public static void gatherServerData(GatherDataEvent.Server event) {
         DataGenerator dataGenerator = event.getGenerator();
         PackOutput packOutput = dataGenerator.getPackOutput();
-        ModEnchantmentProvider enchantmentProvider = dataGenerator.addProvider(event.includeServer(),
+        ModEnchantmentProvider enchantmentProvider = dataGenerator.addProvider(true,
                 new ModEnchantmentProvider(packOutput, event.getLookupProvider()));
         var registryLookupFuture = enchantmentProvider.getRegistryProvider();
-        dataGenerator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput, registryLookupFuture));
-        dataGenerator.addProvider(event.includeServer(), new ModItemTagsProvider(packOutput, registryLookupFuture, event.getExistingFileHelper()));
-        dataGenerator.addProvider(event.includeServer(), new ModEnchantmentTagsProvider(packOutput, registryLookupFuture, event.getExistingFileHelper()));
+        dataGenerator.addProvider(true, new ModRecipeProvider.Runner(packOutput, registryLookupFuture));
+        dataGenerator.addProvider(true, new ModItemTagsProvider(packOutput, registryLookupFuture));
+        dataGenerator.addProvider(true, new ModEnchantmentTagsProvider(packOutput, registryLookupFuture));
     }
 }

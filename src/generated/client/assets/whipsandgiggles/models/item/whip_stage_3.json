@@ -22,7 +22,7 @@
       "rotation": [
         0,
         -90,
-        35
+        45
       ],
       "scale": [
         1.8360001,
@@ -30,9 +30,9 @@
         0.68
       ],
       "translation": [
-        1.2600001,
-        11.750654,
-        2.221281
+        1.2599998,
+        12.232498,
+        -0.68969595
       ]
     },
     "fixed": {
@@ -73,7 +73,7 @@
     },
     "thirdperson_lefthand": {
       "rotation": [
-        0,
+        -90,
         -90,
         -45
       ],
@@ -84,13 +84,13 @@
       ],
       "translation": [
         0,
-        12.562706,
-        1.3797922
+        -5.9493504,
+        -14.487685
       ]
     },
     "thirdperson_righthand": {
       "rotation": [
-        0,
+        -90,
         -90,
         45
       ],
@@ -100,39 +100,13 @@
         0.85
       ],
       "translation": [
-        0,
-        12.562706,
-        1.6202078
+        -1.9505624E-7,
+        -3.3047733,
+        -16.891846
       ]
     }
   },
-  "overrides": [
-    {
-      "model": "whipsandgiggles:item/whip_stage_2",
-      "predicate": {
-        "whipsandgiggles:stage": 0.25
-      }
-    },
-    {
-      "model": "whipsandgiggles:item/whip_stage_3",
-      "predicate": {
-        "whipsandgiggles:stage": 0.5
-      }
-    },
-    {
-      "model": "whipsandgiggles:item/whip_stage_4",
-      "predicate": {
-        "whipsandgiggles:stage": 0.75
-      }
-    },
-    {
-      "model": "whipsandgiggles:item/whip_stage_5",
-      "predicate": {
-        "whipsandgiggles:stage": 1.0
-      }
-    }
-  ],
   "textures": {
-    "layer0": "whipsandgiggles:item/whip1"
+    "layer0": "whipsandgiggles:item/whip3"
   }
 }

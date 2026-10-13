@@ -4,4 +4,4 @@ run/
 repo/
 .idea/
 *.iml
-src/generated/resources/.cache/
+src/generated/**/.cache/
