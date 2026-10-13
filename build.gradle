@@ -8,7 +8,7 @@ plugins {
 version = mod_version
 group = mod_group_id
 base {
-    archivesName = 'whips-and-giggles'
+    archivesName = "whips-and-giggles-${minecraft_version}"
 }
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 

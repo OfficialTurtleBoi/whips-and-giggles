@@ -6,6 +6,7 @@ license="All Rights Reserved"
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
+logoFile="whipsandgiggles.png"
 authors="TurtleBoi"
 enumExtensions="META-INF/enumextensions.json"
 description='''
